@@ -1,0 +1,172 @@
+{
+    "reo::Appeal": {
+        "Precondition": [
+            "reo::Verdict"
+        ]
+    },
+    "reo::Birth": {
+        "Result": [
+            "reo::Alive"
+        ]
+    },
+    "reo::Building_practical_objects": {
+        "Precondition": [
+            "reo::Creating_product_designs"
+        ]
+    },
+    "reo::Caused_change_extent": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Caused_change_location": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Caused_physical_contact": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Change_possession": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Cooking_creation": {
+        "Precondition": [
+            "reo::Creating_recipes"
+        ]
+    },
+    "reo::Creating": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Creating_artifacts": {
+        "Precondition": [
+            "reo::Creating_concepts"
+        ],
+        "Subevent": [
+            "reo::Communication"
+        ]
+    },
+    "reo::Creating_physical_art": {
+        "Precondition": [
+            "reo::Creating_physical_art_concepts"
+        ]
+    },
+    "reo::Creating_text": {
+        "Precondition": [
+            "reo::Creating_text_concepts"
+        ]
+    },
+    "reo::Death": {
+        "Precondition": [
+            "reo::Alive"
+        ],
+        "Result": [
+            "reo::Dead"
+        ]
+    },
+    "reo::Discharge": {
+        "Precondition": [
+            "reo::Incarcerate"
+        ]
+    },
+    "reo::Firing": {
+        "Precondition": [
+            "reo::Employed"
+        ]
+    },
+    "reo::Judicial_Process_Action": {
+        "Subevent": [
+            "reo::Communication"
+        ]
+    },
+    "reo::Kill": {
+        "Result": [
+            "reo::Death"
+        ]
+    },
+    "reo::Organizational_process": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Pardon": {
+        "Precondition": [
+            "reo::Sentence"
+        ]
+    },
+    "reo::Performing": {
+        "Precondition": [
+            "reo::Creating_concepts"
+        ]
+    },
+    "reo::Physical_attack": {
+        "Result": [
+            "reo::Harm"
+        ]
+    },
+    "reo::Prosecute": {
+        "Precondition": [
+            "reo::Charge"
+        ]
+    },
+    "reo::Protest_conflict": {
+        "Precondition": [
+            "reo::Mobilize_social_movement"
+        ],
+        "Subevent": [
+            "reo::Communication"
+        ]
+    },
+    "reo::Sentence": {
+        "Precondition": [
+            "reo::Verdict"
+        ]
+    },
+    "reo::Social_Interaction": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Trial": {
+        "Subevent": [
+            "reo::Prosecute",
+            "reo::Sentence",
+            "reo::Verdict"
+        ]
+    },
+    "reo::quitting": {
+        "Precondition": [
+            "reo::Employed"
+        ]
+    },
+    "reo::Harm": {
+        "Subevent": [
+            "reo::Affecting_event"
+        ]
+    },
+    "reo::Mobilize_social_movement": {
+        "Precondition": [
+            "reo::Able_state",
+            "reo::Take_side"
+        ],
+        "Subevent": [
+            "reo::Appraisal"
+        ]
+    },
+    "reo::Take_side": {
+        "Precondition": [
+            "reo::Group_identity"
+        ]
+    },
+    "reo::Violent_protest": {
+        "Subevent": [
+            "reo::Physical_attack"
+        ]
+    }
+}
