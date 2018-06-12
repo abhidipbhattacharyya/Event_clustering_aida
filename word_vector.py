@@ -7,11 +7,14 @@ from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
 from timeit import default_timer as timer
 from datetime import datetime
+import random
 
 class word_vec_wrapper:
     def __init__(self, fname,nlp):
         self.word_vectors = KeyedVectors.load_word2vec_format(fname, binary=False)
         self.nlp = nlp
+        self.dim = self.word_vectors['the'].shape[0]
+        self.unk = [random.gauss(0, 0.01) for _ in range(self.dim )]
 
     def similarity (self,d1,d2):
         sim = self.word_vectors.similarity(d1, d2)
@@ -21,11 +24,16 @@ class word_vec_wrapper:
     def vector(self, word):
         tokens = self.nlp(word)
         if len(tokens) == 1:
-            return self.word_vectors[word.lower()]
+            if word.lower() in self.word_vectors.vocab:
+                return self.word_vectors[word.lower()]
+            else:
+                return self.unk
         word_vecs = list()
         for tok in tokens:
             if str(tok).lower() in self.word_vectors.vocab:
                 word_vecs.append(self.word_vectors[str(tok).lower()])
+            else:
+                word_vecs.append(self.unk)
 
         combined = [0]*len(word_vecs[0])
         for v in word_vecs:

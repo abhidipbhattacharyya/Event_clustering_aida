@@ -30,9 +30,13 @@ class My_Model:
         #self.model.fit([X1, X2], Y.values, batch_size = 2000, nb_epoch = 100, verbose = 1)
     def train_model(self,train_X1,train_X2,train_y,batch_size_=50,epch=15):
         self.model.fit([train_X1,train_X2], train_y, batch_size=batch_size_, nb_epoch=epch, verbose=1, shuffle=True)
+        self.epch = epch
 
     def predict(self,test_x1,test_x2):
-        self.model.predict([test_x1,test_x2])
+        return self.model.predict([test_x1,test_x2])
+
+    def evaluate(self,X1,X2,y):
+        return self.model.evaluate([X1,X2],y)
 
     def save_Model_separately(self, path):
         weights_file = os.path.join(path,'weight.h5')
@@ -43,11 +47,11 @@ class My_Model:
             f.write(self.model.to_json())
 
     def save_model(self, path):
-        model_file = os.path.join(path,'weight.h5')
-        self.model.save(weights_file)
+        model_file = os.path.join(path,'model_'+str(self.epch)+'.h5')
+        self.model.save(model_file)
 
     def load_model(self, path):
-        self.model.load_model(path)
+        self.model= load_model(path)
 
 
 

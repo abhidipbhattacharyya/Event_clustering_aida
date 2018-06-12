@@ -7,24 +7,31 @@ import spacy
 import os
 import random
 import numpy as np
+import tensorflow as tf
+
+
 
 nlp = spacy.load('en')
 label_data_path = 'cluster/all.cluster'
 data_folders= ['']
+label_data_training = 'cluster/train1.cluster'
+label_data_testing = 'cluster/testing1.cluster'
 testfileName='/Users/abhipubali/Public/DropBox/AIDA_Paper/work/data/010aaf594ae6ef20eb28e3ee26038375.rich_ere.xml.inputs.json'
 #w2v = word_vec_wrapper('/Users/abhipubali/Public/DropBox/sem2_s18/chenhao_course/word_embeddings_benchmarks/scripts/word2vec_wikipedia/wiki_w2v_300.txt')
-
-def read_leable_data(file):
+w2v = word_vec_wrapper('/Users/abhipubali/Public/DropBox/sem2_s18/chenhao_course/word_embeddings_benchmarks/scripts/word2vec_wikipedia/wiki_w2v_300.txt',nlp)
+def read_lable_data(file):
     list_line = list()
     list_pairs = list()
     with open(file) as f:
         lines = f.readlines()
     for i in range(len(lines)):
         line = lines[i]
-        tokens = nlp(line)
+        #tokens = nlp(line)
+        tokens = line.split()
         #0 file namae 2-ev1 4-ev2 6-cluster
         #print(tokens[0])
-        list_pairs.append(Pair(str(tokens[2]),str(tokens[4]),str(tokens[6]),str(tokens[0])))
+        list_pairs.append(Pair(str(tokens[1]),str(tokens[2]),str(tokens[3]),str(tokens[0])))
+        #list_pairs.append(Pair(str(tokens[2]),str(tokens[4]),str(tokens[6]),str(tokens[0])))
     return list_pairs
 
 def read_events_pairs(filepath, list_of_pair, augmentation =0):
@@ -123,52 +130,70 @@ def train_test_split(actual_event_pairs):
             train_set.append(actual_event_pairs[i])
     return train_set, test_set
 
-def feature_extraction_caller(event_pair_list):
+def feature_extraction_caller(event_pair_list, npa):
     X1 = list()
     X2 = list()
     Y = list()
     feat = Feature()
-    w2v = word_vec_wrapper('/Users/abhipubali/Public/DropBox/sem2_s18/chenhao_course/word_embeddings_benchmarks/scripts/word2vec_wikipedia/wiki_w2v_300.txt',nlp)
+
     for p in event_pair_list:
         Y.append(p.same)
         f1= feat.extract_feature(p.ev1, w2v)
         f2= feat.extract_feature(p.ev2, w2v)
         X1.append(f1)
         X2.append(f2)
-    X1 = np.array(X1)
-    X2 = np.array(X2)
-    Y = np.array(Y)
+
+    if npa ==1:
+        X1 = np.array(X1)
+        X2 = np.array(X2)
+        Y = np.array(Y)
     return X1, X2, Y
 
 if __name__ == '__main__':
-    list_of_pair = read_leable_data(label_data_path)
+    '''
+    print('processing .cluster files for training')
+    list_of_pair_train = read_lable_data(label_data_training )
     #print(list_of_pair[0].fname)
-    actual_event_pairs = read_events_pairs('data', list_of_pair)
-    train_set, test_set = train_test_split(actual_event_pairs)
-    print(len(actual_event_pairs))
-    print(len(train_set))
-    print(len(test_set))
+    #actual_event_pairs = read_events_pairs('data', list_of_pair)
 
+    print('processing input files for training')
+    act_train_p = read_events_pairs('data/Inputs', list_of_pair_train)
+    #train_set, vali_set = train_test_split(act_train_p)
+    train_set = act_train_p
     train_set = data_augmentation(train_set)
 
-
-    train_X1, train_X2, train_Y = feature_extraction_caller(train_set)
+    print('extracting features for training')
+    train_X1, train_X2, train_Y = feature_extraction_caller(train_set,1)
 
     model = My_Model(train_X1.shape[1], 50)
-    model.train_model(train_X1,train_X2,train_Y,2)
+    model.train_model(train_X1,train_X2,train_Y,epch=2)
+    if not os.path.exists('trained_model'):
+        os.makedirs('trained_model')
+    model.save_model('trained_model')
+    '''
+    print('loading model')
+    model1 =  My_Model(373, 50)
+    model1.load_model('trained_model/model_2.h5')
 
-    test_X1, test_X2, test_Y = feature_extraction_caller(test_set)
-    print(model.model.evaluate([test_X1, test_X2], test_Y))
+    print('processing .cluster files for testing')
+    list_of_pair_test = read_lable_data(label_data_testing )
+    print('processing input files for testing')
+    test_set = read_events_pairs('data/Inputs', list_of_pair_test)
+    print('processing input files for testing')
+    test_X1, test_X2, test_Y = feature_extraction_caller(test_set,1)
+
+
+    print(model1.evaluate(test_X1, test_X2, test_Y ))
+
+
+    #t1 = np.array(test_X1[0]).reshape(1,373)
+    #t2 = np.array(test_X2[0]).reshape(1,373)
+    #print(t1.shape)
+    #p_y = model.predict(test_X1, test_X2)
+    #print(p_y.shape)
+    #print(test_Y.shape)
+    #p= model.predict(t1, t2)
+    #for i,p  in zip(test_Y, p_y):
+        #print('{} vs {}'.format(p,i))
 # augment 1 labeled data by - swapping ev1 and ev2
 #augment i labeld data by putting ev1=ev2 from any label data
-'''
-with open(testfileName) as json_data:
-    data= json.load(json_data)
-ev= data[0]
-print(ev)
-feat = Feature()
-w2v = word_vec_wrapper('/Users/abhipubali/Public/DropBox/sem2_s18/chenhao_course/word_embeddings_benchmarks/scripts/word2vec_wikipedia/wiki_w2v_300.txt')
-f= feat.extract_feature(ev, w2v)
-print(f.shape)
-print(f)
-'''

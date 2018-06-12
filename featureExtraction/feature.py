@@ -43,7 +43,8 @@ class Feature:
         feature.extend(arg_ere_presence)
         feature.extend(arg_specificity_presence)
         feature.extend(arg_ner_presence)
-        return np.array(feature)
+        #return np.array(feature)
+        return feature
 
 if __name__ == '__main__':
     testfileName='/Users/abhipubali/Public/DropBox/AIDA_Paper/work/data/010aaf594ae6ef20eb28e3ee26038375.rich_ere.xml.inputs.json'

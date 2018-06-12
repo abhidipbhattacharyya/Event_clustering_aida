@@ -25,11 +25,34 @@ class read_file:
                 for i in range(1,len(lines)-1):
                     line = lines[i]
                     tokens = nlp(line)
-                    fname_ = str(tokens[0])
-                    event_men = str(tokens[2])
-                    clus = str(tokens[5]).replace('(','').replace(')','')
-                    l = Line(fname_,event_men,clus)
-                    list_line.append(l)
+                    if len(line)>5 and len(tokens)>5:
+                        fname_ = str(tokens[0])
+                        event_men = str(tokens[2])
+                        clus = str(tokens[5]).replace('(','').replace(')','')
+                        l = Line(fname_,event_men,clus)
+                        list_line.append(l)
+                ff = File(list_line[0].filename,list_line)
+                #print(ff.data)
+                self.data.append(ff)
+
+    def readFiles_wo_spacy(self):
+        for dirname in self.dirnames:
+            for file in os.listdir(dirname):
+                print('processing {}'.format(file))
+                #self.fname.append(file)
+                file = os.path.join(dirname, file)
+                list_line = list()
+                with open(file) as f:
+                    lines = f.readlines()
+                for i in range(1,len(lines)-1):
+                    line = lines[i]
+                    tokens = line.split()
+                    if len(line)>5 and len(tokens)>2:
+                        fname_ = str(tokens[0])
+                        event_men = str(tokens[1])
+                        clus = str(tokens[2]).replace('(','').replace(')','')
+                        l = Line(fname_,event_men,clus)
+                        list_line.append(l)
                 ff = File(list_line[0].filename,list_line)
                 #print(ff.data)
                 self.data.append(ff)
@@ -71,24 +94,34 @@ class read_file:
                 opfile.write('{}\t{}\t{}\t{}\n'.format(ff[0],pair.ev1,pair.ev2,pair.same))
 
     def writeOP_train_test(self):
-        file_train= os.path.join('../cluster','train.cluster')
+        file_train= os.path.join('../cluster','train1.cluster')
         opfile = open(file_train,'w')
         for ff in self.process_train_data:
             for pair in ff[1]:
                 opfile.write('{}\t{}\t{}\t{}\n'.format(ff[0],pair.ev1,pair.ev2,pair.same))
 
-        file_test= os.path.join('../cluster','testing.cluster')
+        file_test= os.path.join('../cluster','testing1.cluster')
         opfile = open(file_test,'w')
         for ff in self.process_test_data:
             for pair in ff[1]:
                 opfile.write('{}\t{}\t{}\t{}\n'.format(ff[0],pair.ev1,pair.ev2,pair.same))
 
 
+def train_test_split(dirname):
+    train_path = 'training_keys'
+    test_path = 'test_keys'
+    for file in os.listdir(dirname):
+        prob = random.uniform(0, 1)
+        if prob < 0.8:
+            newfile = os.path.join(train_path, file)
+        else:
+            newfile = os.path.join(test_path, file)
+        oldfile = os.path.join(dirname, file)
+        os.rename(oldfile, newfile)
 
 
-
-
-df = read_file(['../key'])
-df.readFiles()
+#train_test_split('../key_ori/keys')
+df = read_file(['../key_ori/keys'])
+df.readFiles_wo_spacy()
 df.processdata()
 df.writeOP_train_test()
