@@ -57,7 +57,7 @@ class read_file:
                 #print(ff.data)
                 self.data.append(ff)
 
-    def processdata(self):
+    def processdata(self, train_test=False):
         for ff in self.data:
             for key in ff.data:
                 train_test = random.uniform(0,1)
@@ -70,12 +70,13 @@ class read_file:
                         list_pairs.append(p)
                 d = [fname,list_pairs ]
                 self.process_data.append(d)
-                if train_test > 0.8:
-                    self.process_test_data.append(d)
-                    print('{} goes to testing'.format(key))
-                else:
-                    self.process_train_data.append(d)
-                    print('{} goes to training'.format(key))
+                if train_test == True:
+                    if train_test > 0.8:
+                        self.process_test_data.append(d)
+                        print('{} goes to testing'.format(key))
+                    else:
+                        self.process_train_data.append(d)
+                        print('{} goes to training'.format(key))
 
 
     def writeOP(self):
@@ -86,8 +87,8 @@ class read_file:
             for pair in ff[1]:
                 opfile.write('{}\t{}\t{}\t{}\n'.format(ff[0],pair.ev1,pair.ev2,pair.same))
 
-    def writeOP_all(self):
-        file= os.path.join('../cluster','all.cluster')
+    def writeOP_all(self, fname):
+        file= os.path.join('../cluster',fname)
         opfile = open(file,'w')
         for ff in self.process_data:
             for pair in ff[1]:
@@ -121,7 +122,17 @@ def train_test_split(dirname):
 
 
 #train_test_split('../key_ori/keys')
-df = read_file(['../key_ori/keys'])
-df.readFiles_wo_spacy()
-df.processdata()
-df.writeOP_train_test()
+#df = read_file(['../key_ori/keys'])
+#df.readFiles_wo_spacy()
+#df.processdata()
+#df.writeOP_train_test()
+
+df_train = read_file(['../key_ori/training_keys'])
+df_train.readFiles_wo_spacy()
+df_train.processdata()
+df_train.writeOP_all('train_separate.cluster')
+
+df_test = read_file(['../key_ori/testing_keys'])
+df_test.readFiles_wo_spacy()
+df_test.processdata()
+df_test.writeOP_all('test_separate.cluster')

@@ -8,17 +8,17 @@ import os
 import random
 import numpy as np
 import tensorflow as tf
-
+import configuration.config as cfg
 
 
 nlp = spacy.load('en')
-label_data_path = 'cluster/all.cluster'
+#label_data_path = 'cluster/all.cluster'
 data_folders= ['']
-label_data_training = 'cluster/train1.cluster'
+label_data_training = cfg.LABEL_data_TRAINING
 label_data_testing = 'cluster/testing1.cluster'
 testfileName='/Users/abhipubali/Public/DropBox/AIDA_Paper/work/data/010aaf594ae6ef20eb28e3ee26038375.rich_ere.xml.inputs.json'
 #w2v = word_vec_wrapper('/Users/abhipubali/Public/DropBox/sem2_s18/chenhao_course/word_embeddings_benchmarks/scripts/word2vec_wikipedia/wiki_w2v_300.txt')
-w2v = word_vec_wrapper('/Users/abhipubali/Public/DropBox/sem2_s18/chenhao_course/word_embeddings_benchmarks/scripts/word2vec_wikipedia/wiki_w2v_300.txt',nlp)
+w2v = word_vec_wrapper(cfg.W2V_PATH ,nlp)
 def read_lable_data(file):
     list_line = list()
     list_pairs = list()
@@ -93,7 +93,7 @@ def data_augmentation(list_pair):
     for i in indices:
         p = list_pair[i]
         prob = random.uniform(0, 1)
-        if prob > 0.6 and p.same==1:
+        if prob > 0.4 and p.same==1:
             newp = Pair(p.ev2,p.ev1,p.same)
             aug_one_count = aug_one_count+1
             new_pair.append(newp)
@@ -103,7 +103,7 @@ def data_augmentation(list_pair):
             new_pair.append(newp)
     #data augmentation with reflexive
         prob = random.uniform(0, 1)
-        if prob > 0.9:
+        if prob > 0.6:
             prob = random.uniform(0, 1)
             if prob > 0.5:
                 newp = Pair(p.ev1,p.ev1,1)
@@ -150,14 +150,14 @@ def feature_extraction_caller(event_pair_list, npa):
     return X1, X2, Y
 
 if __name__ == '__main__':
-    '''
+
     print('processing .cluster files for training')
     list_of_pair_train = read_lable_data(label_data_training )
     #print(list_of_pair[0].fname)
     #actual_event_pairs = read_events_pairs('data', list_of_pair)
 
     print('processing input files for training')
-    act_train_p = read_events_pairs('data/Inputs', list_of_pair_train)
+    act_train_p = read_events_pairs(cfg.TRAINING_json_DATA, list_of_pair_train)
     #train_set, vali_set = train_test_split(act_train_p)
     train_set = act_train_p
     train_set = data_augmentation(train_set)
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     train_X1, train_X2, train_Y = feature_extraction_caller(train_set,1)
 
     model = My_Model(train_X1.shape[1], 50)
-    model.train_model(train_X1,train_X2,train_Y,epch=2)
+    model.train_model(train_X1,train_X2,train_Y,epch=cfg.epch)
     if not os.path.exists('trained_model'):
         os.makedirs('trained_model')
     model.save_model('trained_model')
@@ -184,7 +184,7 @@ if __name__ == '__main__':
 
 
     print(model1.evaluate(test_X1, test_X2, test_Y ))
-
+    '''
 
     #t1 = np.array(test_X1[0]).reshape(1,373)
     #t2 = np.array(test_X2[0]).reshape(1,373)

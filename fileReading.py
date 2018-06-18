@@ -113,8 +113,9 @@ class Data:
                     opfile.write('{}\t{}\t({})\n'.format(f.replace('.inputs.json',''), c['event']['mentionid'],i))
             opfile.write('#end document')
             opfile.close()
-
+'''
 df = Data(['data'])
 df.readFiles()
 df.processdata_sim()
 df.writeOP2()
+'''
