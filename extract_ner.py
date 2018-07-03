@@ -5,6 +5,7 @@ from collections import defaultdict
 class Data:
     def __init__(self, dirnames):
         self.data= list()
+        self.event_ere={}
         self.ner_dic = defaultdict()
         self.ner_type_dic = defaultdict()
         self.en_ere={}
@@ -25,9 +26,15 @@ class Data:
         count=0
         count_sp=0
         count_ere=0
+        count_ev_ere=0
         for d in self.data:
             for e in d:
+                event = e['event']
                 args = e['arguments']
+                event_ere = event['ere']
+                if event_ere not in self.event_ere:
+                    self.event_ere[event_ere] = count_ev_ere
+                    count_ev_ere = count_ev_ere+1
                 for a in args:
                     ner_type = a['entity-ner']
                     ner = a['entity']
@@ -50,5 +57,6 @@ df.readFiles()
 df.process_data()
 #print(df.ner_type_dic.keys())
 #print(df.ner_dic)
-print(df.en_sp)
-print(df.en_ere)
+#print(df.en_sp)
+#print(df.en_ere)
+print(df.event_ere)

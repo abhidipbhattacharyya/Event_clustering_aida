@@ -13,7 +13,7 @@ def generate_key(ff):
         ev1 = p.ev1['event']['mentionid']
         ev2 = p.ev2['event']['mentionid']
         same = p.same
-        if same>0.2:
+        if same>0.49:
             if ev1 in cluster :#and ev2 not in cluster:
                 cluster [ev2] = cluster[ev1]
             elif ev1 not in cluster and ev2 in cluster:
@@ -39,7 +39,8 @@ def write_key(ff,key_path):
     fname_to_write = ff[0].replace('.inputs.json','')
     fname = fname_to_write +'.key'
     #key_path = '../key'
-
+    if not os.path.exists(key_path):
+        os.makedirs(key_path)
     file= os.path.join(key_path ,fname)
     print('writing {}'.format(file))
 

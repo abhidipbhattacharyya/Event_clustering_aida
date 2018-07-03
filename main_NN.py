@@ -9,7 +9,7 @@ import random
 import numpy as np
 import tensorflow as tf
 import configuration.config as cfg
-
+from keras.utils import to_categorical
 
 nlp = spacy.load('en')
 #label_data_path = 'cluster/all.cluster'
@@ -133,6 +133,7 @@ def train_test_split(actual_event_pairs):
 def feature_extraction_caller(event_pair_list, npa):
     X1 = list()
     X2 = list()
+    S = list()
     Y = list()
     feat = Feature()
 
@@ -140,14 +141,18 @@ def feature_extraction_caller(event_pair_list, npa):
         Y.append(p.same)
         f1= feat.extract_feature(p.ev1, w2v)
         f2= feat.extract_feature(p.ev2, w2v)
+        l1 = p.ev1['event']['lemma']
+        l2 = p.ev2['event']['lemma']
+        sim =w2v.similarity2(l1,l2)
         X1.append(f1)
         X2.append(f2)
-
+        S.append(sim)
     if npa ==1:
         X1 = np.array(X1)
         X2 = np.array(X2)
+        S = np.array(S)
         Y = np.array(Y)
-    return X1, X2, Y
+    return X1, X2, S,Y,
 
 if __name__ == '__main__':
 
@@ -163,13 +168,15 @@ if __name__ == '__main__':
     train_set = data_augmentation(train_set)
 
     print('extracting features for training')
-    train_X1, train_X2, train_Y = feature_extraction_caller(train_set,1)
-
+    train_X1, train_X2, train_S, train_Y = feature_extraction_caller(train_set,1)
+    #train_Y = to_categorical(train_Y)
     model = My_Model(train_X1.shape[1], 50)
-    model.train_model(train_X1,train_X2,train_Y,epch=cfg.epch)
+    model.train_model(train_X1,train_X2,train_S,train_Y,epch=cfg.epch)
     if not os.path.exists('trained_model'):
         os.makedirs('trained_model')
-    model.save_model('trained_model')
+    saved_fname = model.save_model('trained_model')
+    print('dimention of input is {} x {}'.format(train_X1.shape[1], 50))
+    print('model saved as {}'.format(saved_fname))
     '''
     print('loading model')
     model1 =  My_Model(373, 50)

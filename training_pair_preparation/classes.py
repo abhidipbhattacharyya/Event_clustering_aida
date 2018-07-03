@@ -17,7 +17,7 @@ class File:
         self.data[filename]=lines
 
 class Pair:
-    def __init__(self, ev1_, ev2_, same_=0, fname_=None):
+    def __init__(self, ev1_, ev2_, same_, fname_=None):
         self.ev1 = ev1_
         self.ev2 = ev2_
         self.same = int(same_)

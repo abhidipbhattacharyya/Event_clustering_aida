@@ -5,6 +5,7 @@ import string
 import json
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
+from scipy import spatial
 from timeit import default_timer as timer
 from datetime import datetime
 import random
@@ -19,7 +20,14 @@ class word_vec_wrapper:
     def similarity (self,d1,d2):
         sim = self.word_vectors.similarity(d1, d2)
         dis = self.word_vectors.distance(d1, d2)
-        print('w1={} w2 = {} sim={}\tdis={}'.format(d1,d2,sim,dis))
+        return sim
+        #print('w1={} w2 = {} sim={}\tdis={}'.format(d1,d2,sim,dis))
+
+    def similarity2(self, d1,d2):
+        v1 = self.vector(d1)
+        v2 = self.vector(d2)
+        sim = 1-spatial.distance.cosine(v1,v2)
+        return sim
 
     def vector(self, word):
         tokens = self.nlp(word)
